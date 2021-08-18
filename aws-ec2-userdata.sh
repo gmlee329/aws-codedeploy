@@ -6,7 +6,7 @@
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 AUTOUPDATE=true
 
-function installdep(){
+function installdep() {
 
 if [ ${PLAT} = "ubuntu" ]; then
 
@@ -24,7 +24,7 @@ fi
 
 }
 
-function platformize(){
+function platformize() {
 
 #Linux OS detection#
  if hash lsb_release; then
@@ -43,7 +43,7 @@ function platformize(){
 }
 
 
-function execute(){
+function execute() {
 
 if [ ${PLAT} = "ubuntu" ]; then
 
@@ -93,9 +93,14 @@ fi
 
 }
 
-function installjava8(){
+function installjava8() {
   sudo yum install -y java-1.8.0-openjdk-devel.x86_64
   echo "installation completed"
+}
+
+function makecodedeploystartup() {
+  sudo echo "#!/bin/bash \echo 'Starting codedeploy-agent' \sudo service codedeploy-agent restart" > /etc/init.d/codedeploy-startup.sh
+  sudo chmod +x /etc/init.d/codedeploy-startup.sh
 }
 
 platformize
@@ -103,4 +108,5 @@ installdep
 REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".region")
 execute
 installjava8
+makecodedeploystartup
 exit 0
